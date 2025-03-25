@@ -1,0 +1,24 @@
+
+.app {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 50px;
+  background: #D3D3D3;
+  color: #333;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+
+.app.dark-mode {
+  background: #000514;
+  color: rgb(186, 186, 186);
+}
+
+.app.dark-mode .container {
+  background: rgba(138, 137, 137, 0.395);
+}

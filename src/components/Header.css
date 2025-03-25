@@ -1,0 +1,84 @@
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(17, 17, 17, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  justify-content: space-between;
+}
+
+.header .logo {
+  width: 50px;
+  margin-left: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  color: rgb(179, 99, 0);
+  font-size: 24px;
+  margin-right: auto;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px; 
+  height: 18px; 
+  margin-right: 25px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 18px; 
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 14px; 
+  width: 14px; 
+  left: 2px;
+  bottom: 2px;
+  background-color: #050142;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #aeadad;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Dark Mode Adjustments */
+.dark-mode .slider {
+  background-color: #555;
+}
+
+.dark-mode input:checked + .slider {
+  background-color: #FFB84D;
+}
+
+.dark-mode input:checked + .slider:before {
+  background-color: #ffffff;
+}
