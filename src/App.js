@@ -52,6 +52,12 @@ function App() {
   }, [darkMode]);
 
   useEffect(() => {
+    console.log('isLoggedIn:', isLoggedIn);
+    console.log('kycVerified:', localStorage.getItem('kycVerified'));
+    console.log('userType:', localStorage.getItem('userType'));
+  });
+
+  useEffect(() => {
     const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
     setIsLoggedIn(loggedInStatus);
   }, []);
@@ -106,7 +112,7 @@ function App() {
     <Router>
       <div className={`app ${darkMode ? 'dark-mode' : ''}`}>
         <HeaderWrapper darkMode={darkMode} toggleMode={toggleMode} />
-        {isLoggedIn && localStorage.getItem('kycVerified') === 'true' && <Nav />}
+        {true && <Nav />}
         <Routes>
           <Route path="/" element={<HomeRoute />} />
           <Route 
