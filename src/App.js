@@ -37,7 +37,7 @@ function Logout({ setIsLoggedIn }) {
     window.location.href = '/login'; // Using window.location.href to ensure a full page reload
   }, [setIsLoggedIn]);
 
-  return null; // This component doesn't render anything
+  return null;
 }
 
 function App() {
