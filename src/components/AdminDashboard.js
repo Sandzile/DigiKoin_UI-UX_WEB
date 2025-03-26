@@ -362,7 +362,7 @@ function AdminDashboard() {
               <img src="/images/investor-relations-contact.png" alt="Investor Relations Contact" className="metric-icon" />
                 <div className="metric-info">
                   <span className="metric-label">Investor Relations Contact</span>
-                  <span className="metric-value">Jane Doe, jane.doe@digikoin.com, +971-4-123-4567</span>
+                  <span className="metric-value">krmathabe@voltedgetechsolutions.co.za, +27 81 216 0556</span>
                   <span className="metric-change">N/A</span>
                 </div>
               </div>
@@ -378,7 +378,7 @@ function AdminDashboard() {
               <img src="/images/customer-support.png" alt="Customer Support" className="metric-icon" />
                 <div className="metric-info">
                   <span className="metric-label">Customer Support</span>
-                  <span className="metric-value">support@digikoin.com, +971-800-DIGI (24/7)</span>
+                  <span className="metric-value">customersupport@voltedgetechsolutions.co.za, +27 60 941 3956 (24/7)</span>
                   <span className="metric-change">N/A</span>
                 </div>
               </div>
@@ -386,7 +386,7 @@ function AdminDashboard() {
               <img src="/images/escalation-process.png" alt="Escalation Process" className="metric-icon" />
                 <div className="metric-info">
                   <span className="metric-label">Escalation Process</span>
-                  <span className="metric-value">Contact escalation@digikoin.com</span>
+                  <span className="metric-value">Contact exco@voltedgetechsolutions.co.za</span>
                   <span className="metric-change">N/A</span>
                 </div>
               </div>
