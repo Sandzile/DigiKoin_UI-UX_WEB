@@ -28,13 +28,13 @@ function Logout({ setIsLoggedIn }) {
   const location = useLocation();
 
   useEffect(() => {
-    // Clear user session data
+
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('kycVerified');
     localStorage.removeItem('userType');
     setIsLoggedIn(false);
-    // Redirect to login page
-    window.location.href = '/login'; // Using window.location.href to ensure a full page reload
+
+    window.location.href = '/login';
   }, [setIsLoggedIn]);
 
   return null;
@@ -44,23 +44,13 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('darkMode') === 'true' || false;
   });
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
 
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode);
     document.body.classList.toggle('dark-mode', darkMode);
   }, [darkMode]);
-
-  useEffect(() => {
-    console.log('isLoggedIn:', isLoggedIn);
-    console.log('kycVerified:', localStorage.getItem('kycVerified'));
-    console.log('userType:', localStorage.getItem('userType'));
-  });
-
-  useEffect(() => {
-    const loggedInStatus = localStorage.getItem('isLoggedIn') === 'true';
-    setIsLoggedIn(loggedInStatus);
-  }, []);
 
   const toggleMode = () => setDarkMode(prev => !prev);
 
@@ -112,7 +102,7 @@ function App() {
     <Router>
       <div className={`app ${darkMode ? 'dark-mode' : ''}`}>
         <HeaderWrapper darkMode={darkMode} toggleMode={toggleMode} />
-        {true && <Nav />}
+        {isLoggedIn && localStorage.getItem('kycVerified') === 'true' && <Nav />}
         <Routes>
           <Route path="/" element={<HomeRoute />} />
           <Route 

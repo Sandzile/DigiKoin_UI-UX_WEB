@@ -29,30 +29,33 @@ function Login({ setIsLoggedIn }) {
     localStorage.setItem('isLoggedIn', 'true');
     setIsLoggedIn(true);
     
-    setTimeout(() => {
-      
-      if (userType === 'admin') {
-        localStorage.setItem('kycVerified', 'true');
-        navigate('/admin-dashboard');
-      } else {
-        const isKycVerified = localStorage.getItem('kycVerified') === 'true';
-        if (!isKycVerified) {
-          navigate('/kyc');
-        } else {
-          switch (userType) {
-            case 'investor':
-              navigate('/investor-dashboard');
-              break;
-            case 'minor':
-              navigate('/minor-dashboard');
-              break;
-            default:
-              setError('Invalid user type');
-          }
-        }
+    localStorage.setItem('userType', userType);
+  localStorage.setItem('isLoggedIn', 'true');
+  if (userType === 'admin') {
+    localStorage.setItem('kycVerified', 'true');
+    navigate('/admin-dashboard');
+    setIsLoggedIn(true); // After navigate
+  } else {
+    const isKycVerified = localStorage.getItem('kycVerified') === 'true';
+    if (!isKycVerified) {
+      navigate('/kyc');
+      setIsLoggedIn(false); // Reset if KYC needed
+    } else {
+      switch (userType) {
+        case 'investor':
+          navigate('/investor-dashboard');
+          setIsLoggedIn(true);
+          break;
+        case 'minor':
+          navigate('/minor-dashboard');
+          setIsLoggedIn(true);
+          break;
+        default:
+          setError('Invalid user type');
       }
-    }, 500);
-  };
+    }
+  }
+};
 
   const handleAltLogin = (provider) => (e) => {
     e.preventDefault();
