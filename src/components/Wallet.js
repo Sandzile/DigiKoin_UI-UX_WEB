@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -15,6 +14,7 @@ function Wallet() {
   const [depositConfirmation, setDepositConfirmation] = useState('');
   const [withdrawConfirmation, setWithdrawConfirmation] = useState('');
   const [transferConfirmation, setTransferConfirmation] = useState('');
+  const [error, setError] = useState('');
   const [walletBalances, setWalletBalances] = useState({
     digikoin: '100 DGK',
     btc: '0.5 BTC',
@@ -37,14 +37,15 @@ function Wallet() {
     else if (hash === 'withdraw') setWithdrawFormVisible(true);
   }, [location]);
 
+  useEffect(() => {
+    updateBalance();
+  }, [wallet, walletBalances]);
+
   const updateBalance = () => {
-    console.log('Updating balance for wallet:', wallet);
     if (wallet && walletBalances[wallet]) {
       setBalanceDisplay(`Balance: ${walletBalances[wallet]}`);
-      console.log('New balance display:', `Balance: ${walletBalances[wallet]}`);
     } else {
       setBalanceDisplay('Please select a wallet to view balance.');
-      console.log('Fallback message displayed');
     }
   };
 
@@ -65,6 +66,7 @@ function Wallet() {
     setWithdrawFormVisible(false);
     setTransferFormVisible(false);
     setDepositConfirmation('');
+    setError('');
   };
 
   const showWithdrawForm = () => {
@@ -72,6 +74,7 @@ function Wallet() {
     setWithdrawFormVisible(true);
     setTransferFormVisible(false);
     setWithdrawConfirmation('');
+    setError('');
   };
 
   const showTransferForm = () => {
@@ -79,18 +82,20 @@ function Wallet() {
     setWithdrawFormVisible(false);
     setTransferFormVisible(true);
     setTransferConfirmation('');
+    setError('');
   };
 
   const deposit = () => {
     if (!wallet || !depositAmount) {
-      setDepositConfirmation('Please select a wallet and enter an amount.');
+      setError('Please select a wallet and enter an amount.');
       return;
     }
     const amount = parseFloat(depositAmount);
     if (isNaN(amount) || amount <= 0) {
-      setDepositConfirmation('Please enter a valid amount.');
+      setError('Please enter a valid amount.');
       return;
     }
+    setError('');
     const newBalances = { ...walletBalances };
     newBalances[wallet] = updateBalanceString(newBalances[wallet], amount);
     setWalletBalances(newBalances);
@@ -100,24 +105,24 @@ function Wallet() {
       setDepositConfirmation('');
       setDepositFormVisible(false);
     }, 3000);
-    updateBalance();
   };
 
   const withdraw = () => {
     if (!wallet || !withdrawAmount) {
-      setWithdrawConfirmation('Please select a wallet and enter an amount.');
+      setError('Please select a wallet and enter an amount.');
       return;
     }
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
-      setWithdrawConfirmation('Please enter a valid amount.');
+      setError('Please enter a valid amount.');
       return;
     }
     const currentBalance = parseBalance(walletBalances[wallet]);
     if (currentBalance < amount) {
-      setWithdrawConfirmation('Insufficient balance in wallet.');
+      setError('Insufficient balance in wallet.');
       return;
     }
+    setError('');
     const newBalances = { ...walletBalances };
     newBalances[wallet] = updateBalanceString(newBalances[wallet], -amount);
     setWalletBalances(newBalances);
@@ -127,28 +132,28 @@ function Wallet() {
       setWithdrawConfirmation('');
       setWithdrawFormVisible(false);
     }, 3000);
-    updateBalance();
   };
 
   const transfer = () => {
     if (!transferSource || !transferDest || !transferAmount) {
-      setTransferConfirmation('Please fill in all fields.');
+      setError('Please fill in all fields.');
       return;
     }
     if (transferSource === transferDest) {
-      setTransferConfirmation('Source and destination wallets cannot be the same.');
+      setError('Source and destination wallets cannot be the same.');
       return;
     }
     const amount = parseFloat(transferAmount);
     if (isNaN(amount) || amount <= 0) {
-      setTransferConfirmation('Please enter a valid amount.');
+      setError('Please enter a valid amount.');
       return;
     }
     const sourceBalance = parseBalance(walletBalances[transferSource]);
     if (sourceBalance < amount) {
-      setTransferConfirmation('Insufficient balance in source wallet.');
+      setError('Insufficient balance in source wallet.');
       return;
     }
+    setError('');
     const newBalances = { ...walletBalances };
     newBalances[transferSource] = updateBalanceString(newBalances[transferSource], -amount);
     newBalances[transferDest] = updateBalanceString(newBalances[transferDest], amount);
@@ -161,28 +166,26 @@ function Wallet() {
       setTransferConfirmation('');
       setTransferFormVisible(false);
     }, 3000);
-    updateBalance();
   };
 
   return (
     <div className="container">
       <div className="wallet-grid">
-        <div className="current-balance">
+        <div className="current-balance" role="region" aria-labelledby="balance-heading">
           <img src="/images/DGK.png" alt="DigiKoin Emblem" className="balance-emblem" />
-          <h2>Current Balance</h2>
+          <h2 id="balance-heading">Current Balance</h2>
           <div id="current-balance-display">{balanceDisplay}</div>
         </div>
 
         {/* Wallet Section */}
-        <div className="wallet-section">
-          <h2>Wallet</h2>
+        <div className="wallet-section" role="region" aria-labelledby="wallet-heading">
+          <h2 id="wallet-heading">Wallet</h2>
           <label htmlFor="wallet">Choose Wallet:</label>
           <select
             id="wallet"
             value={wallet}
             onChange={(e) => {
               setWallet(e.target.value);
-              updateBalance();
             }}
             required
           >
@@ -194,10 +197,13 @@ function Wallet() {
           </select>
 
           <div className="wallet-actions">
-            <button onClick={showDepositForm}>Deposit</button>
-            <button onClick={showWithdrawForm}>Withdraw</button>
-            <button onClick={showTransferForm}>Transfer</button>
+            <button onClick={showDepositForm} aria-label="Deposit to Wallet">Deposit</button>
+            <button onClick={showWithdrawForm} aria-label="Withdraw from Wallet">Withdraw</button>
+            <button onClick={showTransferForm} aria-label="Transfer between Wallets">Transfer</button>
           </div>
+
+          {/* Error Display */}
+          {error && <p className="error" id="wallet-error">{error}</p>}
 
           {/* Deposit Form */}
           <div id="deposit-form" style={{ display: depositFormVisible ? 'block' : 'none', marginTop: '20px' }}>
@@ -209,6 +215,7 @@ function Wallet() {
               value={depositAmount}
               onChange={(e) => setDepositAmount(e.target.value)}
               required
+              aria-describedby={error ? 'wallet-error' : undefined}
             />
             <button onClick={deposit}>Confirm Deposit</button>
             <div id="deposit-confirmation">{depositConfirmation}</div>
@@ -224,6 +231,7 @@ function Wallet() {
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
               required
+              aria-describedby={error ? 'wallet-error' : undefined}
             />
             <button onClick={withdraw}>Confirm Withdrawal</button>
             <div id="withdraw-confirmation">{withdrawConfirmation}</div>
@@ -265,6 +273,7 @@ function Wallet() {
               value={transferAmount}
               onChange={(e) => setTransferAmount(e.target.value)}
               required
+              aria-describedby={error ? 'wallet-error' : undefined}
             />
             <button onClick={transfer}>Confirm Transfer</button>
             <div id="transfer-confirmation">{transferConfirmation}</div>
@@ -272,9 +281,9 @@ function Wallet() {
         </div>
       </div>
 
-      {/* Transaction History Section (Full Width Below) */}
-      <div className="transaction-history">
-        <h2>Transaction History</h2>
+      {/* Transaction History Section */}
+      <div className="transaction-history" role="region" aria-labelledby="history-heading">
+        <h2 id="history-heading">Transaction History</h2>
         <table>
           <thead>
             <tr>

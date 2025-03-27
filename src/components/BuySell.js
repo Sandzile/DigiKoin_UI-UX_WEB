@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -10,6 +9,7 @@ function BuySell() {
   const [sellMethod, setSellMethod] = useState('');
   const [buyConfirmation, setBuyConfirmation] = useState('');
   const [sellConfirmation, setSellConfirmation] = useState('');
+  const [error, setError] = useState('');
   const location = useLocation();
 
   useEffect(() => {
@@ -24,30 +24,40 @@ function BuySell() {
 
   const showTab = (tabId) => {
     setActiveTab(tabId);
+    window.location.hash = tabId;
     setBuyConfirmation('');
     setSellConfirmation('');
+    setError('');
   };
 
   const buyGold = () => {
     if (!buyAmount || !buyMethod) {
-      alert('Please fill in all fields.');
+      setError('Please fill in all fields.');
       return;
     }
+    if (isNaN(buyAmount) || buyAmount <= 0) {
+      setError('Please enter a valid amount.');
+      return;
+    }
+    setError('');
     setBuyConfirmation(`Purchased ${buyAmount} using ${buyMethod}. Transaction pending...`);
     setTimeout(() => {
-      alert('Purchase successful!');
       setBuyConfirmation(`Purchased ${buyAmount} using ${buyMethod}. Completed!`);
-    }, 1000);
+    }, 1000); 
   };
 
   const sellGold = () => {
     if (!sellAmount || !sellMethod) {
-      alert('Please fill in all fields.');
+      setError('Please fill in all fields.');
       return;
     }
+    if (isNaN(sellAmount) || sellAmount <= 0) {
+      setError('Please enter a valid amount.');
+      return;
+    }
+    setError('');
     setSellConfirmation(`Sold ${sellAmount} to ${sellMethod}. Transaction pending...`);
     setTimeout(() => {
-      alert('Sale successful!');
       setSellConfirmation(`Sold ${sellAmount} to ${sellMethod}. Completed!`);
     }, 1000);
   };
@@ -55,13 +65,31 @@ function BuySell() {
   return (
     <div className="container">
       <div className="tab-buttons">
-        <button onClick={() => showTab('buy')}>Buy</button>
-        <button onClick={() => showTab('sell')}>Sell</button>
+        <button 
+          onClick={() => showTab('buy')} 
+          aria-controls="buy" 
+          aria-selected={activeTab === 'buy'}
+        >
+          Buy
+        </button>
+        <button 
+          onClick={() => showTab('sell')} 
+          aria-controls="sell" 
+          aria-selected={activeTab === 'sell'}
+        >
+          Sell
+        </button>
       </div>
 
       {/* Buy Gold Tab */}
-      <div id="buy" className={`tab ${activeTab === 'buy' ? 'active' : ''}`}>
+      <div 
+        id="buy" 
+        className={`tab ${activeTab === 'buy' ? 'active' : ''}`} 
+        role="tabpanel" 
+        aria-labelledby="buy-tab"
+      >
         <h2>Buy Token</h2>
+        {error && <p className="error" id="buy-error">{error}</p>}
         <label htmlFor="buy-amount">Enter Amount (grams or USD):</label>
         <input
           type="text"
@@ -70,6 +98,7 @@ function BuySell() {
           value={buyAmount}
           onChange={(e) => setBuyAmount(e.target.value)}
           required
+          aria-describedby={error ? 'buy-error' : undefined}
         />
         <label htmlFor="buy-method">Choose Payment Method:</label>
         <select
@@ -88,8 +117,14 @@ function BuySell() {
       </div>
 
       {/* Sell Gold Tab */}
-      <div id="sell" className={`tab ${activeTab === 'sell' ? 'active' : ''}`}>
+      <div 
+        id="sell" 
+        className={`tab ${activeTab === 'sell' ? 'active' : ''}`} 
+        role="tabpanel" 
+        aria-labelledby="sell-tab"
+      >
         <h2>Sell Token</h2>
+        {error && <p className="error" id="sell-error">{error}</p>}
         <label htmlFor="sell-amount">Select Amount (grams/tokens):</label>
         <input
           type="text"
@@ -98,6 +133,7 @@ function BuySell() {
           value={sellAmount}
           onChange={(e) => setSellAmount(e.target.value)}
           required
+          aria-describedby={error ? 'sell-error' : undefined}
         />
         <label htmlFor="sell-method">Choose Payout Method:</label>
         <select

@@ -1,91 +1,108 @@
-
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Profile({ setIsLoggedIn }) {
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState(null); // Dynamic user data
+  const [message, setMessage] = useState(''); // In-page feedback
 
   useEffect(() => {
+    // Simulate fetching user data
+    setTimeout(() => {
+      setUserInfo({ name: 'Sandzile', verified: 'Verified' });
+    }, 1000);
+
+    // Animation for sections
     const sections = document.querySelectorAll('.section');
     sections.forEach((section, index) => {
       setTimeout(() => {
         section.classList.add('active');
-      }, index * 200); 
+      }, index * 200);
     });
   }, []);
 
   const changePassword = () => {
-    const confirmation = window.confirm('Are you sure you want to change your password?');
-    if (confirmation) {
-      alert('Password change request submitted! Check your email for further instructions.');
+    if (window.confirm('Are you sure you want to change your password?')) {
+      setMessage('Password change request submitted! Check your email for further instructions.');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const enable2FA = () => {
-    const confirmation = window.confirm('Enable Two-Factor Authentication?');
-    if (confirmation) {
+    if (window.confirm('Enable Two-Factor Authentication?')) {
       setTimeout(() => {
-        alert('2FA enabled successfully!');
+        setMessage('2FA enabled successfully!');
+        setTimeout(() => setMessage(''), 3000);
       }, 1000);
     }
   };
 
   const setupBiometricLogin = () => {
-    const confirmation = window.confirm('Set up biometric login?');
-    if (confirmation) {
+    if (window.confirm('Set up biometric login?')) {
       setTimeout(() => {
-        alert('Biometric login setup completed!');
+        setMessage('Biometric login setup completed!');
+        setTimeout(() => setMessage(''), 3000);
       }, 1000);
     }
   };
 
   const manageNotifications = () => {
-    const confirmation = window.confirm('Manage your notification settings?');
-    if (confirmation) {
-      alert('Notification settings updated!');
+    if (window.confirm('Manage your notification settings?')) {
+      setMessage('Notification settings updated!');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const handleLogout = () => {
-    const confirmation = window.confirm('Are you sure you want to log out?');
-    if (confirmation) {
+    if (window.confirm('Are you sure you want to log out?')) {
       localStorage.removeItem('userType');
       localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('kycVerified'); // Added for consistency
       setIsLoggedIn(false);
-      alert('You have been logged out successfully!');
-      navigate('/');
+      setMessage('You have been logged out successfully!');
+      setTimeout(() => {
+        navigate('/');
+        setMessage('');
+      }, 2000);
     }
   };
 
   return (
     <div className="container">
+      {/* Message Display */}
+      {message && <p className="message" id="profile-message">{message}</p>}
+
       {/* User Info Section */}
-      <div className="section">
-        <h2>User Info</h2>
-        <p><strong>Name:</strong> Sandzile</p>
-        <p><strong>ID Verification Status:</strong> Verified</p>
+      <div className="section" role="region" aria-labelledby="user-info-heading">
+        <h2 id="user-info-heading">User Info</h2>
+        <p><strong>Name:</strong> {userInfo ? userInfo.name : 'Loading...'}</p>
+        <p><strong>ID Verification Status:</strong> {userInfo ? userInfo.verified : 'Loading...'}</p>
       </div>
 
-       {/* Security Settings Section */}
-       <div className="section">
-        <h2>Security Settings</h2>
+      {/* Security Settings Section */}
+      <div className="section" role="region" aria-labelledby="security-heading">
+        <h2 id="security-heading">Security Settings</h2>
         <p><a href="#" onClick={(e) => { e.preventDefault(); changePassword(); }}>Change Password</a></p>
         <p><a href="#" onClick={(e) => { e.preventDefault(); enable2FA(); }}>Enable 2FA</a></p>
         <p><a href="#" onClick={(e) => { e.preventDefault(); setupBiometricLogin(); }}>Setup Biometric Login</a></p>
       </div>
 
       {/* Notification Center Section */}
-      <div className="section">
-        <h2>Notification Center</h2>
+      <div className="section" role="region" aria-labelledby="notification-heading">
+        <h2 id="notification-heading">Notification Center</h2>
         <p><strong>Price Alerts:</strong> Enabled</p>
         <p><strong>Transaction Updates:</strong> Enabled</p>
         <p><a href="#" onClick={(e) => { e.preventDefault(); manageNotifications(); }}>Manage Notification</a></p>
       </div>
 
       {/* Logout Section */}
-      <div className="section">
-        <h2>Account</h2>
-        <button onClick={handleLogout} className="logout-button">
+      <div className="section" role="region" aria-labelledby="account-heading">
+        <h2 id="account-heading">Account</h2>
+        <button 
+          onClick={handleLogout} 
+          className="logout-button" 
+          aria-label="Log Out of Account"
+        >
           Log Out
         </button>
       </div>
